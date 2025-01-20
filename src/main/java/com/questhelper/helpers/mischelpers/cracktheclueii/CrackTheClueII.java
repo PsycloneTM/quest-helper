@@ -46,6 +46,8 @@ import com.questhelper.requirements.runelite.RuneliteRequirement;
 import com.questhelper.requirements.widget.WidgetTextRequirement;
 import net.runelite.api.widgets.ComponentID;
 import static com.questhelper.requirements.util.LogicHelper.nor;
+import com.questhelper.requirements.zone.Zone;
+import com.questhelper.requirements.zone.ZoneRequirement;
 
 public class CrackTheClueII extends BasicQuestHelper
 {
@@ -57,10 +59,15 @@ public class CrackTheClueII extends BasicQuestHelper
 
 	Requirement completedWeek1, completedWeek2, completedWeek3, completedWeek4;
 
+	Zone week1Zone, week2Zone, week3ShrugZone, week3CheerZone, week4Zone, finalZone;
+
+	ZoneRequirement inWeek1Zone, inWeek2Zone, inWeek3ShrugZone, inWeek3CheerZone, inWeek4Zone, inFinalZone;
+
 	@Override
 	public Map<Integer, QuestStep> loadSteps()
 	{
 		setupRequirements();
+		setupZones();
 		setupConditions();
 		setupSteps();
 
@@ -124,6 +131,13 @@ public class CrackTheClueII extends BasicQuestHelper
 			getConfigManager(), "cracktheclue2.week4",
 			new WidgetTextRequirement(ComponentID.DIARY_TEXT, true, "completed Week 4")
 		);
+
+		inWeek1Zone = new ZoneRequirement(week1Zone);
+		inWeek2Zone = new ZoneRequirement(week2Zone);
+		inWeek3ShrugZone = new ZoneRequirement(week3ShrugZone);
+		inWeek3CheerZone = new ZoneRequirement(week3CheerZone);
+		inWeek4Zone = new ZoneRequirement(week4Zone);
+		inFinalZone = new ZoneRequirement(finalZone);
 	}
 
 	@Override
@@ -136,6 +150,16 @@ public class CrackTheClueII extends BasicQuestHelper
 		plainPizza = new ItemRequirement("Plain pizza", ItemID.PLAIN_PIZZA).isNotConsumed();
 		woodenShield = new ItemRequirement("Wooden shield", ItemID.WOODEN_SHIELD).isNotConsumed();
 		cheese = new ItemRequirement("Cheese", ItemID.CHEESE).isNotConsumed();
+	}
+
+	public void setupZones()
+	{
+		week1Zone = new Zone(new WorldPoint(2977, 3193, 0), new WorldPoint(2979, 3195, 0));
+		week2Zone = new Zone(new WorldPoint(2990, 3294, 0), new WorldPoint(2992, 3296, 0));
+		week3ShrugZone = new Zone(new WorldPoint(3034, 3517, 0), new WorldPoint(3036, 3519, 0));
+		week3CheerZone = new Zone(new WorldPoint(3034, 3517, 0), new WorldPoint(3036, 3519, 0));
+		week4Zone = new Zone(new WorldPoint(3234, 3630, 0), new WorldPoint(3236, 3632, 0));
+		finalZone = new Zone(new WorldPoint(3245, 3361, 0), new WorldPoint(3247, 3363, 0));
 	}
 
 	public void setupSteps()
@@ -163,7 +187,7 @@ public class CrackTheClueII extends BasicQuestHelper
 			"Perform the yes emote.", plainPizza, woodenShield, cheese);
 		finalEmoteClap = new EmoteStep(this, QuestEmote.CLAP, new WorldPoint(3246, 3362, 0),
 			"Perform the clap emote.", plainPizza, woodenShield, cheese);
-	}
+		}
 
 	@Override
 	public List<ItemRequirement> getItemRequirements()
