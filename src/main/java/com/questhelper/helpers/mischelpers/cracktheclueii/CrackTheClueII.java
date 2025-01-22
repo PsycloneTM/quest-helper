@@ -24,11 +24,16 @@
  */
 package com.questhelper.helpers.mischelpers.cracktheclueii;
 
+import com.questhelper.config.ConfigKeys;
 import com.questhelper.panel.PanelDetails;
 import com.questhelper.questhelpers.BasicQuestHelper;
+import com.questhelper.requirements.ChatMessageRequirement;
+import com.questhelper.requirements.conditional.Conditions;
 import com.questhelper.requirements.item.ItemRequirement;
+import com.questhelper.requirements.util.LogicType;
 import com.questhelper.rewards.ItemReward;
 import com.questhelper.steps.ConditionalStep;
+import com.questhelper.steps.DetailedQuestStep;
 import com.questhelper.steps.DigStep;
 import com.questhelper.steps.EmoteStep;
 import com.questhelper.steps.QuestStep;
@@ -41,6 +46,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import net.runelite.api.ItemID;
+import net.runelite.api.SpriteID;
 import net.runelite.api.coords.WorldPoint;
 import com.questhelper.requirements.runelite.RuneliteRequirement;
 import com.questhelper.requirements.widget.WidgetTextRequirement;
@@ -53,15 +59,17 @@ public class CrackTheClueII extends BasicQuestHelper
 {
 	ItemRequirement spade, pieDish, rawHerring, goblinMail, plainPizza, woodenShield, cheese;
 
-	QuestStep week1Dig, week2Dig, week3EmoteShrug, week3EmoteCheer, week4Dig, finalEmoteBow, finalEmoteYes, finalEmoteClap;
+	DetailedQuestStep week1Dig, week2Dig, week3Emotes, week3EmoteShrug, week3EmoteCheer, week4Dig, finalEmotes, finalEmoteBow, finalEmoteYes, finalEmoteClap;
 
 	ConditionalStep week1Steps, week2Steps, week3Steps, week4Steps, finalSteps;
 
-	Requirement completedWeek1, completedWeek2, completedWeek3, completedWeek4;
+	ChatMessageRequirement week3Message;
 
-	Zone week1Zone, week2Zone, week3ShrugZone, week3CheerZone, week4Zone, finalZone;
+	Requirement ornateglovesbootscollected, ornatelegscollected, ornatetopcollected, ornatecapecollected, ornatehelmcollected;
 
-	ZoneRequirement inWeek1Zone, inWeek2Zone, inWeek3ShrugZone, inWeek3CheerZone, inWeek4Zone, inFinalZone;
+	Zone week1Zone, week2Zone, week3Zone, week4Zone, finalZone;
+
+	ZoneRequirement inWeek1Zone, inWeek2Zone, inWeek3Zone, inWeek4Zone, inFinalZone;
 
 	@Override
 	public Map<Integer, QuestStep> loadSteps()
@@ -74,28 +82,18 @@ public class CrackTheClueII extends BasicQuestHelper
 		Map<Integer, QuestStep> steps = new HashMap<>();
 
 		week1Steps = new ConditionalStep(this, week1Dig);
-		week1Steps.setLockingCondition(completedWeek1);
-
 		week2Steps = new ConditionalStep(this, week2Dig);
-		week2Steps.setLockingCondition(completedWeek2);
-
-		week3Steps = new ConditionalStep(this, week3EmoteShrug);
-		week3Steps.addStep(new WidgetTextRequirement(ComponentID.DIARY_TEXT, true, "shrug emote"), week3EmoteCheer);
-		week3Steps.setLockingCondition(completedWeek3);
-
+		week3Steps = new ConditionalStep(this, week3Emotes);
 		week4Steps = new ConditionalStep(this, week4Dig);
-		week4Steps.setLockingCondition(completedWeek4);
+		finalSteps = new ConditionalStep(this, finalEmotes);
 
-		finalSteps = new ConditionalStep(this, finalEmoteBow);
-		finalSteps.addStep(new WidgetTextRequirement(ComponentID.DIARY_TEXT, true, "bow emote"), finalEmoteYes);
-		finalSteps.addStep(new WidgetTextRequirement(ComponentID.DIARY_TEXT, true, "yes emote"), finalEmoteClap);
 
 		ConditionalStep allSteps = new ConditionalStep(this, week1Steps);
-		allSteps.addStep(nor(completedWeek1), week1Steps);
-		allSteps.addStep(nor(completedWeek2), week2Steps);
-		allSteps.addStep(nor(completedWeek3), week3Steps);
-		allSteps.addStep(nor(completedWeek4), week4Steps);
-		allSteps.addStep(nor(completedWeek4), finalSteps);
+		allSteps.addStep(nor(ornateglovesbootscollected), week1Steps);
+		allSteps.addStep(nor(ornatelegscollected), week2Steps);
+		allSteps.addStep(nor(ornatetopcollected), week3Steps);
+		allSteps.addStep(nor(ornatecapecollected), week4Steps);
+		allSteps.addStep(nor(ornatecapecollected), finalSteps);
 		allSteps.setCheckAllChildStepsOnListenerCall(true);
 
 		steps.put(0, allSteps);
@@ -112,30 +110,44 @@ public class CrackTheClueII extends BasicQuestHelper
 
 	public void setupConditions()
 	{
-		completedWeek1 = new RuneliteRequirement(
-			getConfigManager(), "cracktheclue2.week1",
-			new WidgetTextRequirement(ComponentID.DIARY_TEXT, true, "completed Week 1")
+		ornateglovesbootscollected = new RuneliteRequirement(
+			configManager, ConfigKeys.CRACK_THE_CLUE_II_WEEK_ONE_ITEM.getKey(),
+			new Conditions(true, LogicType.OR,
+				new WidgetTextRequirement(ComponentID.DIARY_TEXT, true, "You find some beautifully ornate gloves and boots.")
+			)
 		);
 
-		completedWeek2 = new RuneliteRequirement(
-			getConfigManager(), "cracktheclue2.week2",
-			new WidgetTextRequirement(ComponentID.DIARY_TEXT, true, "completed Week 2")
+		ornatelegscollected = new RuneliteRequirement(
+			configManager, ConfigKeys.CRACK_THE_CLUE_II_WEEK_TWO_ITEM.getKey(),
+			new Conditions(true, LogicType.OR,
+				new WidgetTextRequirement(ComponentID.DIARY_TEXT, true, "You find some beautifully ornate leg armour.")
+			)
 		);
 
-		completedWeek3 = new RuneliteRequirement(
-			getConfigManager(), "cracktheclue2.week3",
-			new WidgetTextRequirement(ComponentID.DIARY_TEXT, true, "completed Week 3")
+		ornatetopcollected = new RuneliteRequirement(
+			configManager, ConfigKeys.CRACK_THE_CLUE_II_WEEK_THREE_ITEM.getKey(),
+			new Conditions(true, LogicType.OR,
+				new ChatMessageRequirement("Some beautifully ornate armour mysteriously appears.")
+			)
 		);
 
-		completedWeek4 = new RuneliteRequirement(
-			getConfigManager(), "cracktheclue2.week4",
-			new WidgetTextRequirement(ComponentID.DIARY_TEXT, true, "completed Week 4")
+		ornatecapecollected = new RuneliteRequirement(
+			configManager, ConfigKeys.CRACK_THE_CLUE_II_WEEK_FOUR_ITEM.getKey(),
+			new Conditions(true, LogicType.OR,
+				new WidgetTextRequirement(ComponentID.DIARY_TEXT, true, "You find a beautifully ornate cape.")
+			)
+		);
+
+		ornatehelmcollected = new RuneliteRequirement(
+			configManager, ConfigKeys.CRACK_THE_CLUE_II_WEEK_FINAL_ITEM.getKey(),
+			new Conditions(true, LogicType.OR,
+				new WidgetTextRequirement(ComponentID.DIARY_TEXT, true, "Here, take this. But tell no one I was here.")
+			)
 		);
 
 		inWeek1Zone = new ZoneRequirement(week1Zone);
 		inWeek2Zone = new ZoneRequirement(week2Zone);
-		inWeek3ShrugZone = new ZoneRequirement(week3ShrugZone);
-		inWeek3CheerZone = new ZoneRequirement(week3CheerZone);
+		inWeek3Zone = new ZoneRequirement(week3Zone);
 		inWeek4Zone = new ZoneRequirement(week4Zone);
 		inFinalZone = new ZoneRequirement(finalZone);
 	}
@@ -156,14 +168,12 @@ public class CrackTheClueII extends BasicQuestHelper
 	{
 		week1Zone = new Zone(new WorldPoint(2977, 3193, 0), new WorldPoint(2979, 3195, 0));
 		week2Zone = new Zone(new WorldPoint(2990, 3294, 0), new WorldPoint(2992, 3296, 0));
-		week3ShrugZone = new Zone(new WorldPoint(3034, 3517, 0), new WorldPoint(3036, 3519, 0));
-		week3CheerZone = new Zone(new WorldPoint(3034, 3517, 0), new WorldPoint(3036, 3519, 0));
+		week3Zone = new Zone(new WorldPoint(3034, 3517, 0), new WorldPoint(3036, 3519, 0));
 		week4Zone = new Zone(new WorldPoint(3234, 3630, 0), new WorldPoint(3236, 3632, 0));
 		finalZone = new Zone(new WorldPoint(3245, 3361, 0), new WorldPoint(3247, 3363, 0));
 	}
 
-	public void setupSteps()
-	{
+	public void setupSteps() {
 		week1Dig = new DigStep(this, new WorldPoint(2978, 3194, 0),
 			"Dig south-east of Rimmington and north-west of the chapel.", spade, pieDish);
 		week1Dig.addIcon(ItemID.SPADE);
@@ -172,22 +182,21 @@ public class CrackTheClueII extends BasicQuestHelper
 			"Dig by the entrance to the Air Altar south of Falador.", spade, rawHerring);
 		week2Dig.addIcon(ItemID.SPADE);
 
-		week3EmoteShrug = new EmoteStep(this, QuestEmote.SHRUG, new WorldPoint(3035, 3518, 0),
-			"Perform the shrug emote east of the Black Knights' Fortress.");
-		week3EmoteCheer = new EmoteStep(this, QuestEmote.CHEER, new WorldPoint(3035, 3518, 0),
-			"Perform the cheer emote east of the Black Knights' Fortress.");
+		List<QuestEmote> week3Steps = Arrays.asList(QuestEmote.SHRUG, QuestEmote.CHEER);
+		week3Emotes = new EmoteStep(this, week3Steps, new WorldPoint(3035, 3518, 0),
+			"Perform the shrug emote followed by cheer emote east of the Black Knights' Fortress.");
+		week3Emotes.addTileMarker(new WorldPoint(3035, 3518, 0), SpriteID.TAB_EMOTES);
+		week3Message = new ChatMessageRequirement("Some beautifully ornate armour mysteriously appears.");
 
 		week4Dig = new DigStep(this, new WorldPoint(3235, 3631, 0),
 			"Dig outside the Chaos Temple in the Wilderness.", spade, goblinMail);
 
-		finalEmoteBow = new EmoteStep(this, QuestEmote.BOW, new WorldPoint(3246, 3362, 0),
-			"Perform the bow emote between the trees south of Varrock, east of the stone circle. Have nothing equipped and only a plain pizza, wooden shield and cheese in your inventory.",
+		List<QuestEmote> finalSteps = Arrays.asList(QuestEmote.BOW, QuestEmote.YES, QuestEmote.CLAP);
+		finalEmotes = new EmoteStep(this, finalSteps, new WorldPoint(3246, 3362, 0),
+			"Perform the bow emote, then yes emote, then clap emote between the trees south of Varrock, east of the stone circle. Have nothing equipped and only a plain pizza, wooden shield and cheese in your inventory.",
 			plainPizza, woodenShield, cheese);
-		finalEmoteYes = new EmoteStep(this, QuestEmote.YES, new WorldPoint(3246, 3362, 0),
-			"Perform the yes emote.", plainPizza, woodenShield, cheese);
-		finalEmoteClap = new EmoteStep(this, QuestEmote.CLAP, new WorldPoint(3246, 3362, 0),
-			"Perform the clap emote.", plainPizza, woodenShield, cheese);
-		}
+		finalEmotes.addTileMarker(new WorldPoint(3035, 3518, 0), SpriteID.TAB_EMOTES);
+	}
 
 	@Override
 	public List<ItemRequirement> getItemRequirements()
@@ -209,12 +218,6 @@ public class CrackTheClueII extends BasicQuestHelper
 	}
 
 	@Override
-	public List<String> getNotes()
-	{
-		return Collections.singletonList("If the helper is out of sync, open up the Quest Journal to re-sync it.");
-	}
-
-	@Override
 	public List<PanelDetails> getPanels()
 	{
 		List<PanelDetails> allSteps = new ArrayList<>();
@@ -229,7 +232,7 @@ public class CrackTheClueII extends BasicQuestHelper
 		week2Panel.setLockingStep(week2Steps);
 		allSteps.add(week2Panel);
 
-		PanelDetails week3Panel = new PanelDetails("Week 3", Arrays.asList(week3EmoteShrug, week3EmoteCheer));
+		PanelDetails week3Panel = new PanelDetails("Week 3", Collections.singletonList(week3Emotes));
 		week3Panel.setLockingStep(week3Steps);
 		allSteps.add(week3Panel);
 
@@ -239,7 +242,7 @@ public class CrackTheClueII extends BasicQuestHelper
 		allSteps.add(week4Panel);
 
 		PanelDetails finalPanel = new PanelDetails("Final Clue",
-			Arrays.asList(finalEmoteBow, finalEmoteYes, finalEmoteClap),
+			Collections.singletonList(finalEmotes),
 			Arrays.asList(plainPizza, woodenShield, cheese));
 		finalPanel.setLockingStep(finalSteps);
 		allSteps.add(finalPanel);
