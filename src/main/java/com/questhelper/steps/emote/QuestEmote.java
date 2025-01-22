@@ -44,7 +44,11 @@ public enum QuestEmote
 	STAMP("Stamp", 730),
 	FLAP("Flap", 731),
 	SLAP_HEAD("Slap Head", 729),
-	SPIN("Spin", EMOTE_SPIN);
+	SPIN("Spin", EMOTE_SPIN),
+	SHRUG("Shrug", EMOTE_SHRUG),
+	CHEER("Cheer", EMOTE_CHEER),
+	YES("Yes", EMOTE_YES),
+	PANIC("Panic", EMOTE_PANIC);
 
 	private String name;
 	private int spriteId;
