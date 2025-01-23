@@ -43,7 +43,8 @@ import net.runelite.api.widgets.ComponentID;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.eventbus.Subscribe;
 
-public class EmoteStep extends DetailedQuestStep {
+public class EmoteStep extends DetailedQuestStep 
+{
 	private boolean hasScrolled;
 	private final QuestEmote emote;
 	private List<QuestEmote> emoteSequence;
@@ -51,7 +52,8 @@ public class EmoteStep extends DetailedQuestStep {
 	private final WorldPoint requiredLocation;
 	private static final int LOCATION_TOLERANCE = 1;
 
-	public EmoteStep(QuestHelper questHelper, QuestEmote emote, String text, Requirement... requirements) {
+	public EmoteStep(QuestHelper questHelper, QuestEmote emote, String text, Requirement... requirements)
+	{
 		super(questHelper, text, requirements);
 		this.emote = emote;
 		this.emoteSequence = new ArrayList<>();
@@ -60,7 +62,8 @@ public class EmoteStep extends DetailedQuestStep {
 		this.requiredLocation = null;
 	}
 
-	public EmoteStep(QuestHelper questHelper, QuestEmote emote, WorldPoint worldPoint, String text, Requirement... requirements) {
+	public EmoteStep(QuestHelper questHelper, QuestEmote emote, WorldPoint worldPoint, String text, Requirement... requirements)
+	{
 		super(questHelper, worldPoint, text, requirements);
 		this.emote = emote;
 		this.emoteSequence = new ArrayList<>();
@@ -69,7 +72,8 @@ public class EmoteStep extends DetailedQuestStep {
 		this.requiredLocation = worldPoint;
 	}
 
-	public EmoteStep(QuestHelper questHelper, List<QuestEmote> emoteSequence, WorldPoint worldPoint, String text, Requirement... requirements) {
+	public EmoteStep(QuestHelper questHelper, List<QuestEmote> emoteSequence, WorldPoint worldPoint, String text, Requirement... requirements)
+	{
 		super(questHelper, worldPoint, text, requirements);
 		this.emote = emoteSequence.get(0);
 		this.emoteSequence = emoteSequence;
@@ -78,26 +82,33 @@ public class EmoteStep extends DetailedQuestStep {
 	}
 
 	@Subscribe
-	public void onAnimationChanged(AnimationChanged event) {
-		if (!(event.getActor() instanceof Player)) {
+	public void onAnimationChanged(AnimationChanged event)
+	{
+		if (!(event.getActor() instanceof Player))
+		{
 			return;
 		}
 
 		Player player = (Player) event.getActor();
-		if (player != client.getLocalPlayer()) {
+		if (player != client.getLocalPlayer())
+		{
 			return;
 		}
 
 		QuestEmote currentEmote = getCurrentEmote();
-		if (currentEmote != null && player.getAnimation() == currentEmote.getAnimationId()) {
-			if (isPlayerInCorrectLocation(player)) {
+		if (currentEmote != null && player.getAnimation() == currentEmote.getAnimationId())
+		{
+			if (isPlayerInCorrectLocation(player))
+			{
 				nextEmote();
 			}
 		}
 	}
 
-	private boolean isPlayerInCorrectLocation(Player player) {
-		if (requiredLocation == null) {
+	private boolean isPlayerInCorrectLocation(Player player)
+	{
+		if (requiredLocation == null)
+		{
 			return true;
 		}
 
@@ -105,15 +116,19 @@ public class EmoteStep extends DetailedQuestStep {
 		return playerLocation.distanceTo(requiredLocation) <= LOCATION_TOLERANCE;
 	}
 
-	public QuestEmote getCurrentEmote() {
-		if (currentEmoteIndex >= emoteSequence.size()) {
+	public QuestEmote getCurrentEmote()
+	{
+		if (currentEmoteIndex >= emoteSequence.size())
+		{
 			return null;
 		}
 		return emoteSequence.get(currentEmoteIndex);
 	}
 
-	public void nextEmote() {
-		if (currentEmoteIndex < emoteSequence.size() - 1) {
+	public void nextEmote()
+	{
+		if (currentEmoteIndex < emoteSequence.size() - 1)
+		{
 			currentEmoteIndex++;
 			hasScrolled = false;
 		}
