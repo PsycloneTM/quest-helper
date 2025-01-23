@@ -81,11 +81,15 @@ public class CrackTheClueII extends BasicQuestHelper
 
 		Map<Integer, QuestStep> steps = new HashMap<>();
 
-		week1Steps = new ConditionalStep(this, week1Dig);
+		week1Steps.setLockingCondition(ornateglovesbootscollected);
 		week2Steps = new ConditionalStep(this, week2Dig);
+		week2Steps.setLockingCondition(ornatelegscollected);
 		week3Steps = new ConditionalStep(this, week3Emotes);
+		week3Steps.setLockingCondition(ornatetopcollected);
 		week4Steps = new ConditionalStep(this, week4Dig);
+		week4Steps.setLockingCondition(ornatecapecollected);
 		finalSteps = new ConditionalStep(this, finalEmotes);
+		finalSteps.setLockingCondition(ornatehelmcollected);
 
 
 		ConditionalStep allSteps = new ConditionalStep(this, week1Steps);
