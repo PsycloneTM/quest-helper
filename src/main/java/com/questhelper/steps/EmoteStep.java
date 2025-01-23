@@ -43,7 +43,7 @@ import net.runelite.api.widgets.ComponentID;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.eventbus.Subscribe;
 
-public class EmoteStep extends DetailedQuestStep 
+public class EmoteStep extends DetailedQuestStep
 {
 	private boolean hasScrolled;
 	private final QuestEmote emote;
