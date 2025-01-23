@@ -93,7 +93,7 @@ public class CrackTheClueII extends BasicQuestHelper
 		allSteps.addStep(nor(ornatelegscollected), week2Steps);
 		allSteps.addStep(nor(ornatetopcollected), week3Steps);
 		allSteps.addStep(nor(ornatecapecollected), week4Steps);
-		allSteps.addStep(nor(ornatecapecollected), finalSteps);
+		allSteps.addStep(nor(ornatehelmecollected), finalSteps);
 		allSteps.setCheckAllChildStepsOnListenerCall(true);
 
 		steps.put(0, allSteps);
